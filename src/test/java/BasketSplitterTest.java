@@ -20,18 +20,15 @@ public class BasketSplitterTest {
         assertNotNull(Resource);
         absolutePathToConfigFile = Paths.get(Resource.toURI()) + "\\config.json";
     }
-
     @Test
-    void testEmptyBasket() throws IOException {
+    void shouldThrowExceptionWhenGivenEmptyBasket() throws IOException {
         BasketSplitter splitter = new BasketSplitter(absolutePathToConfigFile);
         List<String> items = List.of();
 
-        Map<String, List<String>> groups = splitter.split(items);
-
-        assertTrue(groups.isEmpty());
+        assertThrows(IllegalArgumentException.class, () -> splitter.split(items));
     }
     @Test
-    void testSingleProductBasket() throws IOException {
+    void shouldReturnProperGroupWhenGivenSingleProductBasket() throws IOException {
         BasketSplitter splitter = new BasketSplitter(absolutePathToConfigFile);
         List<String> items = List.of("Cookies Oatmeal Raisin");
 
@@ -43,7 +40,7 @@ public class BasketSplitterTest {
     }
 
     @Test
-    void testDuplicatedProductsInBasket() throws IOException {
+    void shouldReturnGroupWithDoubledProductWhenGivenDuplicatedProductBasket() throws IOException {
         BasketSplitter splitter = new BasketSplitter(absolutePathToConfigFile);
         List<String> items = Arrays.asList("Cookies Oatmeal Raisin", "Cookies Oatmeal Raisin");
 
@@ -56,7 +53,7 @@ public class BasketSplitterTest {
     }
 
     @Test
-    void testMultipleProductsWithDifferentDeliveryOptions() throws IOException {
+    void shouldReturnCorrectGroupsWithCorrectComplexConfigFile() throws IOException {
         BasketSplitter splitter = new BasketSplitter(absolutePathToConfigFile);
         List<String> items = Arrays.asList("Cookies Oatmeal Raisin", "Cheese Cloth", "English Muffin", "Ecolab - Medallion", "Cheese - St. Andre");
 

@@ -14,20 +14,26 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ConfigLoaderTest {
     String absolutePathToConfigFile;
     String absolutePathToInvalidConfigFile;
+    String absolutePathToDuplicateDeliveryMethodForItemConfigFile;
     public ConfigLoaderTest() throws URISyntaxException {
         URL resource = ConfigLoaderTest.class.getResource("config");
         assertNotNull(resource);
         absolutePathToConfigFile = Paths.get(resource.toURI()) + "\\config.json";
         absolutePathToInvalidConfigFile = Paths.get(resource.toURI()) + "\\invalidConfig.json";
+        absolutePathToDuplicateDeliveryMethodForItemConfigFile = Paths.get(resource.toURI()) + "\\duplicateDeliveryMethodForItemConfig.json";
     }
     @Test
     void shouldThrowExceptionWhenGivenInvalidConfigFile() {
 
         assertThrows(IllegalArgumentException.class, () -> ConfigLoader.parseConfigAndGetDeliveryOptions(absolutePathToInvalidConfigFile));
     }
-
     @Test
-    void testThatParseConfigAndGetDeliveryOptionsGeneratesValidMapFromValidConfigFile() throws IOException {
+    void shouldThrowExceptionWhenGivenConfigFileItemHasDuplicateDeliveryOptions() {
+
+        assertThrows(IllegalArgumentException.class, () -> ConfigLoader.parseConfigAndGetDeliveryOptions(absolutePathToDuplicateDeliveryMethodForItemConfigFile));
+    }
+    @Test
+    void shouldLoadValidConfigCorrectly() throws IOException {
         Map<String, List<String>> deliveryOptions = ConfigLoader.parseConfigAndGetDeliveryOptions(absolutePathToConfigFile);
 
         assertEquals(10, deliveryOptions.size());

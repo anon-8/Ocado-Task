@@ -10,11 +10,19 @@ public class BasketSplitter {
         this.deliveryOptions = ConfigLoader.parseConfigAndGetDeliveryOptions(absolutePathToConfigFile);
     }
     public Map<String, List<String>> split(List<String> items) {
+
+        validateItemsSize(items);
+
         Map<String, List<String>> itemsMap = getItemsDeliveriesMap(items);
         List<String> ranking = getRanking(itemsMap);
         return getDeliveryGroups(items, ranking);
     }
 
+    private static void validateItemsSize(List<String> items) {
+        if(items.size()>100 || items.isEmpty()){
+            throw new IllegalArgumentException("Too many items or none in basket");
+        }
+    }
     private Map<String, List<String>> getDeliveryGroups(List<String> items, List<String> ranking) {
         Map<String, List<String>> deliveryGroups = new HashMap<>();
         items.forEach(item -> ranking.stream()

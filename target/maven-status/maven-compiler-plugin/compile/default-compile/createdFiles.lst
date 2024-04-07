@@ -1,0 +1,3 @@
+com\ocado\basket\BasketSplitter.class
+com\ocado\basket\ConfigLoader.class
+com\ocado\basket\JsonLoader.class

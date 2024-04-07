@@ -13,14 +13,15 @@ public class ConfigLoader extends JsonLoader {
         validateItemsAmount(config);
 
         Map<String, List<String>> deliveryConfig = new HashMap<>();
-        Set<String> seenKeys = new HashSet<>();
+        Set<String> seenItems = new HashSet<>();
+        Set<String> seenDeliveryOptions = new HashSet<>();
         config.fields().forEachRemaining(entry -> {
             String itemName = entry.getKey();
             JsonNode itemDeliveryOptions = entry.getValue();
 
-            validateUniqueItemName(seenKeys, itemName);
+            validateAmountOfUniqueDeliveryOptions(itemDeliveryOptions, seenDeliveryOptions);
+
             validateDeliveryOptionsFormat(itemDeliveryOptions, itemName);
-            validateDeliveryOptionsAmount(itemDeliveryOptions, itemName);
 
             List<String> deliveryOptions = new ArrayList<>();
             itemDeliveryOptions.forEach(deliveryOption -> deliveryOptions.add(deliveryOption.asText()));
@@ -31,16 +32,17 @@ public class ConfigLoader extends JsonLoader {
         return deliveryConfig;
     }
 
+
+    private static void validateAmountOfUniqueDeliveryOptions(JsonNode itemDeliveryOptions, Set<String> seenDeliveryOptions) {
+        itemDeliveryOptions.forEach(deliveryOption -> seenDeliveryOptions.add(deliveryOption.asText()));
+        if(seenDeliveryOptions.size() > 10){
+            throw new IllegalArgumentException("Too many unique delivery options");
+        }
+    }
     private static void validateUniqueDeliveryOptionsForItem(List<String> deliveryOptions, String itemName) {
         Set<String> optionSet = new HashSet<>(deliveryOptions);
         if (optionSet.size() < deliveryOptions.size()) {
             throw new IllegalArgumentException("Duplicates in delivery options of item: " + itemName);
-        }
-    }
-
-    private static void validateDeliveryOptionsAmount(@NotNull JsonNode itemDeliveryOptions, String itemName) {
-        if(itemDeliveryOptions.size() > 10 || itemDeliveryOptions.isEmpty()){
-            throw new IllegalArgumentException("Too many or none delivery options for item: " + itemName);
         }
     }
     private static void validateItemsAmount(@NotNull JsonNode config) {
@@ -53,10 +55,4 @@ public class ConfigLoader extends JsonLoader {
             throw new IllegalArgumentException("Value for product: " + itemName + " is not a list.");
         }
     }
-    private static void validateUniqueItemName(@NotNull Set<String> seenKeys, String itemName) {
-        if (!seenKeys.add(itemName)) {
-            throw new IllegalArgumentException("Duplicate product found: " + itemName);
-        }
-    }
-
 }

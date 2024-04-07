@@ -11,23 +11,25 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JsonLoaderTest {
     String absolutePathToEmptyJsonFile;
-    String absolutePathToJsonList;
-    String absolutePathToJsonObject;
+    String absolutePathToInvalidJsonFile;
+    String absolutePathToValidJsonFile;
     public JsonLoaderTest() throws URISyntaxException {
         URL resource = JsonLoaderTest.class.getResource("jsonLoader");
         assertNotNull(resource);
         absolutePathToEmptyJsonFile = Paths.get(resource.toURI()) + "\\empty.json";
-        absolutePathToJsonList = Paths.get(resource.toURI()) + "\\list.json";
-        absolutePathToJsonObject = Paths.get(resource.toURI()) + "\\object.json";
+        absolutePathToInvalidJsonFile = Paths.get(resource.toURI()) + "\\invalid.json";
+        absolutePathToValidJsonFile = Paths.get(resource.toURI()) + "\\valid.json";
     }
+
     @Test
     void shouldThrowExceptionWhenGivenEmptyOrNonexistentFile() {
 
         assertThrows(IOException.class, () -> JsonLoader.getObjectFromJson(absolutePathToEmptyJsonFile));
+        assertThrows(IOException.class, () -> JsonLoader.getObjectFromJson("\\"));
     }
     @Test
     void shouldThrowExceptionWhenGivenInvalidJsonObject() {
 
-        assertThrows(IOException.class, () -> JsonLoader.getObjectFromJson(absolutePathToJsonList));
+        assertThrows(IOException.class, () -> JsonLoader.getObjectFromJson(absolutePathToInvalidJsonFile));
     }
 }
